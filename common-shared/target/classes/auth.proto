@@ -1,0 +1,33 @@
+syntax = "proto3";
+
+option java_package = "com.example.chat.auth";
+option java_multiple_files = true;
+
+service AuthService {
+  // För att logga in och få en JWT
+  rpc Login (LoginRequest) returns (LoginResponse);
+
+  // För att kontrollera om en token är giltig (används av BFF eller andra tjänster)
+  rpc ValidateToken (ValidateRequest) returns (ValidateResponse);
+}
+
+message LoginRequest {
+  string username = 1;
+  string password = 2;
+}
+
+message LoginResponse {
+  string access_token = 1;
+  string token_type = 2; // Oftast "Bearer"
+  int64 expires_in = 3;  // Hur länge token är giltig i sekunder
+}
+
+message ValidateRequest {
+  string token = 1;
+}
+
+message ValidateResponse {
+  bool is_valid = 1;
+  string user_id = 2;   // Viktigt! Så andra tjänster vet vem användaren är
+  string username = 3;
+}
