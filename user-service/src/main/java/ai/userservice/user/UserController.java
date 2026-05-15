@@ -5,19 +5,21 @@ import com.example.chat.user.CreateUserRequest;
 import com.example.chat.user.UserResponse;
 import com.example.chat.user.UserServiceGrpc;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @RequestMapping("/api/users")
-@RequiredArgsConstructor
 @RestController
 public class UserController {
 
-    private final UserServiceGrpc.UserServiceBlockingStub userStub;
+    private final UserGrpcClient userGrpcClient;
 
-
+    public UserController(UserGrpcClient userGrpcClient) {
+        this.userGrpcClient = userGrpcClient;
+    }
 
     @PostMapping
     public String create(@RequestBody UserDTO dto) {
@@ -30,10 +32,24 @@ public class UserController {
                 .setEmail(dto.email())
                 .build();
 
-
-        UserResponse response = userStub.createUser(request);
+        UserResponse response = userGrpcClient.createUser(request);
 
         return "Användare skapad med ID: " + response.getUserId();
     }
+
+    @GetMapping("/{username}")
+    public ResponseEntity<?> getUserProfile(@PathVariable String username) {
+        try {
+            UserResponse response = userGrpcClient.getUser(username);
+
+            return ResponseEntity.ok(Map.of(
+                    "username", response.getUsername(),
+                    "displayName", response.getDisplayName()
+            ));
+        } catch (Exception e) {
+            return ResponseEntity.status(404).body("Användaren hittades inte");
+        }
+    }
+
 }
 

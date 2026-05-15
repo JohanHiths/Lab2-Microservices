@@ -6,6 +6,9 @@ option java_multiple_files = true;
 service UserService {
   rpc CreateUser (CreateUserRequest) returns (UserResponse);
   rpc GetUserProfile (UserRequest) returns (UserResponse);
+
+  rpc GetUserByUsername (UsernameRequest) returns (UserResponse);
+
   rpc UpdateUser (UpdateUserRequest) returns (UserResponse);
   rpc DeleteUser (UserRequest) returns (DeleteUserResponse);
   rpc ListUsers (Empty) returns (UserList);
@@ -20,6 +23,11 @@ message CreateUserRequest {
 
 message UserRequest {
   int64 user_id = 1;
+}
+
+// Ny message
+message UsernameRequest {
+  string username = 1;
 }
 
 message UpdateUserRequest{

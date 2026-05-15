@@ -27,7 +27,7 @@
 
     <properties>
         <java.version>25</java.version>
-        <spring-grpc.version>0.11.0</spring-grpc.version>
+        <spring-grpc.version>1.0.3</spring-grpc.version>
 
         <grpc.version>1.74.0</grpc.version>
         <protobuf.version>4.31.1</protobuf.version>

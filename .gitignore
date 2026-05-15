@@ -1,0 +1,26 @@
+# Bygg-filer (Viktigast!)
+target/
+**/target/
+build/
+bin/
+
+# IntelliJ & IDE
+.idea/
+*.iml
+*.iws
+*.ipr
+out/
+.vscode/
+
+# Maven wrapper
+.mvn/
+mvnw
+mvnw.cmd
+
+# Systemfiler
+.DS_Store
+Thumbs.db
+
+# Loggar och miljövariabler
+*.log
+.env
