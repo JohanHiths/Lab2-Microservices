@@ -13,4 +13,6 @@ public class GrpcClientConfig {
 
         return UserServiceGrpc.newBlockingStub(channelFactory.createChannel("user-service"));
     }
+
+
 }
