@@ -19,6 +19,7 @@ message CreateUserRequest {
   string password = 2;
   string display_name = 3;
   string email = 4;
+
 }
 
 message UserRequest {
@@ -39,6 +40,8 @@ message UserResponse {
   string username = 2;
   string display_name = 3;
   string email = 4;
+  string password_hash = 5;
+
 }
 
 message DeleteUserResponse {

@@ -4,11 +4,8 @@ option java_package = "com.example.chat.auth";
 option java_multiple_files = true;
 
 service AuthService {
-  // För att logga in och få en JWT
   rpc Login (LoginRequest) returns (LoginResponse);
-
-  // För att kontrollera om en token är giltig (används av BFF eller andra tjänster)
-  rpc ValidateToken (ValidateRequest) returns (ValidateResponse);
+  rpc ValidateToken (TokenRequest) returns (ValidateResponse);
 }
 
 message LoginRequest {
@@ -17,17 +14,16 @@ message LoginRequest {
 }
 
 message LoginResponse {
-  string access_token = 1;
-  string token_type = 2; // Oftast "Bearer"
-  int64 expires_in = 3;  // Hur länge token är giltig i sekunder
+  string token = 1;
+  string message = 2;
 }
 
-message ValidateRequest {
+message TokenRequest {
   string token = 1;
 }
 
 message ValidateResponse {
-  bool is_valid = 1;
-  string user_id = 2;   // Viktigt! Så andra tjänster vet vem användaren är
+  bool isValid = 1;
+  string user_id = 2;
   string username = 3;
 }
