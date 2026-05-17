@@ -34,7 +34,6 @@ public class AuthGrpcService extends AuthServiceGrpc.AuthServiceImplBase {
     @Override
     public void login(LoginRequest request, StreamObserver<LoginResponse> responseObserver) {
         try {
-            // 1. Ring User Service för att hämta användaren baserat på användarnamn
             UsernameRequest userReq = UsernameRequest.newBuilder()
                     .setUsername(request.getUsername())
                     .build();
@@ -45,7 +44,7 @@ public class AuthGrpcService extends AuthServiceGrpc.AuthServiceImplBase {
             boolean matches = passwordEncoder.matches(request.getPassword(), user.getPasswordHash());
 
             if (!matches) {
-                throw new RuntimeException("Fel lösenord, kompis!");
+                throw new RuntimeException("Fel lösenord");
             }
 
 
@@ -67,4 +66,6 @@ public class AuthGrpcService extends AuthServiceGrpc.AuthServiceImplBase {
                     .asRuntimeException());
         }
     }
+
 }
+
