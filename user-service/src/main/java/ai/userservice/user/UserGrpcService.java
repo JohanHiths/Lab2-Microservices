@@ -6,7 +6,8 @@ import com.example.chat.user.UserResponse;
 import com.example.chat.user.UserServiceGrpc;
 import io.grpc.stub.StreamObserver;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.grpc.server.service.GrpcService;
+import net.devh.boot.grpc.server.service.GrpcService;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 
@@ -15,8 +16,6 @@ public class UserGrpcService extends UserServiceGrpc.UserServiceImplBase {
 
     private final UserRepository userRepository;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
 
     public UserGrpcService(UserRepository userRepository) {
         this.userRepository = userRepository;
