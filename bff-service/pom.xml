@@ -46,6 +46,7 @@
             <artifactId>grpc-spring-boot-starter</artifactId>
             <version>3.1.0.RELEASE</version>
         </dependency>
+
         <dependency>
             <groupId>com.chattapp</groupId>
             <artifactId>common-shared</artifactId>
