@@ -20,6 +20,7 @@ message LoginResponse {
 
 message TokenRequest {
   string token = 1;
+
 }
 
 message ValidateResponse {
