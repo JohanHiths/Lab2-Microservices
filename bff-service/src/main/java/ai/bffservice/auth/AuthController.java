@@ -44,7 +44,6 @@ public class AuthController {
 
             }
             finally {
-            System.out.println("asd");
 
         }
     }

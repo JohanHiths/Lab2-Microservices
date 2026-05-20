@@ -1,0 +1,35 @@
+syntax = "proto3";
+
+option java_package = "com.example.chat.user";
+option java_multiple_files = true;
+
+service MessageService {
+  rpc SendMessage (SendMessageRequest) returns (MessageResponse);
+  rpc GetChatHistory (ChatHistoryRequest) returns (ChatHistoryResponse);
+}
+
+message SendMessageRequest {
+  string senderId = 1;
+  string content = 2;
+
+}
+
+message MessageResponse{
+  string message = 1;
+  string timestamp = 2;
+
+
+}
+
+message ChatHistoryRequest{
+
+
+}
+
+message ChatHistoryResponse{
+  bool isValid = 1;
+  string responseId = 2;
+  string username = 3;
+
+}
+

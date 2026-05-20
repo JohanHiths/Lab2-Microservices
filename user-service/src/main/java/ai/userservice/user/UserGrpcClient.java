@@ -16,24 +16,22 @@ public class UserGrpcClient {
     private final UserServiceGrpc.UserServiceBlockingStub userStub;
 
 
-
-
     public UserGrpcClient(UserServiceGrpc.UserServiceBlockingStub userStub) {
         this.userStub = userStub;
     }
 
     public UserGrpcClient() {
-        ManagedChannel channel = ManagedChannelBuilder.forAddress("localhost", 9091)
+        ManagedChannel channel = ManagedChannelBuilder.forAddress("localhost", 9094)
                 .usePlaintext()
                 .build();
         this.userStub = UserServiceGrpc.newBlockingStub(channel);
     }
 
     public UserResponse createUser(CreateUserRequest request) {
+
         return userStub.createUser(request);
+
     }
-
-
 
 
     public UserResponse getUser(String username) {

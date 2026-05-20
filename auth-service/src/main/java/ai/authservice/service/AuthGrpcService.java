@@ -40,8 +40,19 @@ public class AuthGrpcService extends AuthServiceGrpc.AuthServiceImplBase {
                     .build();
 
             UserResponse user = userStub.getUserByUsername(userReq);
+            UserResponse userFromUserService = userStub.getUserByUsername(userReq);
+
+            System.out.println("--------------------------------------------");
+            System.out.println("LÖSENORD FRÅN POSTMAN: [" + request.getPassword() + "]");
+            System.out.println("HASH FRÅN USER-SERVICE: [" + userFromUserService.getPasswordHash() + "]");
+            System.out.println("--------------------------------------------");
+
+
 
             boolean matches = passwordEncoder.matches(request.getPassword(), user.getPasswordHash());
+
+
+
 
             if (!matches) {
                 throw new RuntimeException("Fel lösenord");
