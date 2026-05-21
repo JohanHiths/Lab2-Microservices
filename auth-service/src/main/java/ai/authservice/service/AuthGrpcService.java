@@ -1,6 +1,5 @@
 package ai.authservice.service;
 
-
 import ai.authservice.jwt.JwtTokenProvider;
 import com.example.chat.auth.AuthServiceGrpc;
 import com.example.chat.auth.LoginRequest;
@@ -10,12 +9,14 @@ import com.example.chat.user.UserServiceGrpc;
 import com.example.chat.user.UsernameRequest;
 import io.grpc.Status;
 import io.grpc.stub.StreamObserver;
+
 import net.devh.boot.grpc.client.inject.GrpcClient;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.grpc.server.service.GrpcService;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import net.devh.boot.grpc.server.service.GrpcService;
+
 
 
 @GrpcService
@@ -34,23 +35,30 @@ public class AuthGrpcService extends AuthServiceGrpc.AuthServiceImplBase {
     @Override
     public void login(LoginRequest request, StreamObserver<LoginResponse> responseObserver) {
         try {
-            // 1. Ring User Service för att hämta användaren baserat på användarnamn
             UsernameRequest userReq = UsernameRequest.newBuilder()
                     .setUsername(request.getUsername())
                     .build();
 
             UserResponse user = userStub.getUserByUsername(userReq);
+            UserResponse userFromUserService = userStub.getUserByUsername(userReq);
+
+            System.out.println("--------------------------------------------");
+            System.out.println("LÖSENORD FRÅN POSTMAN: [" + request.getPassword() + "]");
+            System.out.println("HASH FRÅN USER-SERVICE: [" + userFromUserService.getPasswordHash() + "]");
+            System.out.println("--------------------------------------------");
+
 
 
             boolean matches = passwordEncoder.matches(request.getPassword(), user.getPasswordHash());
 
+
+
+
             if (!matches) {
-                throw new RuntimeException("Fel lösenord, kompis!");
+                throw new RuntimeException("Fel lösenord");
             }
 
-
             String token = tokenProvider.generateToken(user.getUserId(), user.getUsername());
-
 
             LoginResponse response = LoginResponse.newBuilder()
                     .setToken(token)
@@ -67,4 +75,6 @@ public class AuthGrpcService extends AuthServiceGrpc.AuthServiceImplBase {
                     .asRuntimeException());
         }
     }
+
 }
+

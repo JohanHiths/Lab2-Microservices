@@ -22,6 +22,7 @@ public class UserController {
     }
 
     @PostMapping
+
     public String create(@RequestBody UserDTO dto) {
 
 
@@ -50,6 +51,7 @@ public class UserController {
             return ResponseEntity.status(404).body("Användaren hittades inte");
         }
     }
+
 
 }
 

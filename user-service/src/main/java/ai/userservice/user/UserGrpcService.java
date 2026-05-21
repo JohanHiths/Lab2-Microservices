@@ -1,12 +1,10 @@
 package ai.userservice.user;
 
-import com.example.chat.user.CreateUserRequest;
-import com.example.chat.user.UserRequest;
-import com.example.chat.user.UserResponse;
-import com.example.chat.user.UserServiceGrpc;
+import com.example.chat.user.*;
 import io.grpc.stub.StreamObserver;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.grpc.server.service.GrpcService;
+import net.devh.boot.grpc.server.service.GrpcService;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 
@@ -14,12 +12,13 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 public class UserGrpcService extends UserServiceGrpc.UserServiceImplBase {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
 
-    public UserGrpcService(UserRepository userRepository) {
+
+    public UserGrpcService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
 
@@ -55,33 +54,44 @@ public class UserGrpcService extends UserServiceGrpc.UserServiceImplBase {
 
 
         UserEntity user = new UserEntity();
+
+        String rawPassword = request.getPassword();
+        String Password = passwordEncoder.encode(rawPassword);
+
         user.setUsername(request.getUsername());
-        user.setPassword(request.getPassword());
+        user.setPassword(Password);
         user.setDisplayName(request.getDisplayName());
         user.setEmail(request.getEmail());
 
-
         UserEntity savedUser = userRepository.save(user);
-
 
         UserResponse response = UserResponse.newBuilder()
                 .setUserId(savedUser.getId().toString())
                 .setUsername(savedUser.getUsername())
+                .setPasswordHash(savedUser.getPassword())
                 .setDisplayName(savedUser.getDisplayName())
                 .build();
 
         responseObserver.onNext(response);
         responseObserver.onCompleted();
+
     }
 
     @Override
-    public void getUserByUsername(com.example.chat.user.UsernameRequest request,
+    public void getUserByUsername(UsernameRequest request,
                                   StreamObserver<UserResponse> responseObserver) {
 
         UserEntity user = userRepository.findByUsername(request.getUsername())
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        responseObserver.onNext(mapToResponse(user));
+        UserResponse response = UserResponse.newBuilder()
+                .setUserId(user.getId().toString())
+                .setUsername(user.getUsername())
+                .setEmail(user.getEmail())
+                .setPasswordHash(user.getPassword())
+                .build();
+
+        responseObserver.onNext(response);
         responseObserver.onCompleted();
     }
 
