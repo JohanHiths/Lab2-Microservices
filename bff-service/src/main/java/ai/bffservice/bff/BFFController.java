@@ -60,4 +60,64 @@ public class BFFController {
             return ResponseEntity.status(500).body("Kunde inte skicka meddelande via gRPC: " + e.getStatus().getDescription());
         }
     }
+    @GetMapping
+    public ResponseEntity<?> getChatHistory(Authentication authentication) {
+
+
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return ResponseEntity.status(401).body("Du måste vara inloggad för att se chatthistorik!");
+        }
+
+        com.example.chat.user.ChatHistoryRequest gRpcRequest =
+                com.example.chat.user.ChatHistoryRequest.newBuilder().build();
+
+        try {
+
+            com.example.chat.user.ChatHistoryResponse grpcResponse = messageStub.getChatHistory(gRpcRequest);
+
+            java.util.List<ai.bffservice.dto.MessageResponseDTO> historyList = grpcResponse.getMessagesList().stream()
+                    .map(msg -> new ai.bffservice.dto.MessageResponseDTO(
+                            msg.getMessageId(),
+                            msg.getSenderId(),
+                            msg.getContent(),
+                            msg.getCreatedAt(),
+                            msg.getUpdatedAt(),
+                            msg.getReplyToMessageId(),
+                            msg.getIsDeleted()
+                    ))
+                    .toList();
+
+            return ResponseEntity.ok(historyList);
+
+        } catch (io.grpc.StatusRuntimeException e) {
+            return ResponseEntity.status(500).body("Kunde inte hämta historik via gRPC: " + e.getStatus().getDescription());
+        }
+    }
+    @DeleteMapping("/{messageId}")
+    public ResponseEntity<?> deleteMessage(@PathVariable String messageId, Authentication authentication) {
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return ResponseEntity.status(401).body("Du måste vara inlogga för att radera meddelanden!");
+        }
+
+        String currentUserId = authentication.getName();
+
+
+        com.example.chat.user.DeleteMessageRequest gRpcRequest = com.example.chat.user.DeleteMessageRequest.newBuilder()
+                .setMessageId(messageId)
+                .setUserId(currentUserId)
+                .build();
+
+        try {
+            com.example.chat.user.DeleteMessageResponse grpcResponse = messageStub.deleteMessage(gRpcRequest);
+            return ResponseEntity.ok(java.util.Map.of(
+                    "success", grpcResponse.getSuccess(),
+                    "messageId", grpcResponse.getMessageId(),
+                    "status", "Meddelandet har raderats (Soft Delete)"
+            ));
+
+        } catch (io.grpc.StatusRuntimeException e) {
+            return ResponseEntity.status(500).body("Kunde inte radera meddelande via gRPC: " + e.getStatus().getDescription());
+        }
+    }
+
 }
