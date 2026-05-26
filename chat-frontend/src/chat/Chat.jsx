@@ -10,21 +10,36 @@ export default function Chat() {
     const [inputMessage, setInputMessage] = useState('');
     const [personality, setPersonality] = useState('coder');
 
-    const handleSendMessage = (e) => {
+    const handleSendMessage = async (e) => {
         e.preventDefault();
         if (!inputMessage.trim()) return;
 
-
-        const newMsg = {
-            id: Date.now(),
-            text: inputMessage,
-            isUser: true
+        const messageData = {
+            content: inputMessage,
+            senderId: "1",
+            personality: personality
         };
-        setMessages(prev => [...prev, newMsg]);
-        setInputMessage('');
 
+        try {
 
-        console.log(`Skickar till Kafka via BFF (${personality}):`, inputMessage);
+            const response = await fetch('/api/messages', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                },
+                body: JSON.stringify(messageData)
+            });
+
+            if (response.ok) {
+                setMessages(prev => [...prev, { id: Date.now(), text: inputMessage, isUser: true }]);
+                setInputMessage('');
+            } else {
+                console.error("Kunde inte skicka meddelande:", response.statusText);
+            }
+        } catch (error) {
+            console.error("Nätverksfel vid sändning:", error);
+        }
     };
 
     return (
