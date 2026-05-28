@@ -36,14 +36,16 @@ public class KafkaProducerService {
             CompletableFuture<SendResult<String, String>> future =
                     kafkaTemplate.send(TOPIC, entity.getId(), jsonMessage);
 
+
             future.whenComplete((result, ex) -> {
                 if (ex == null) {
 
                     long offset = result.getRecordMetadata().offset();
                     int partition = result.getRecordMetadata().partition();
-                    System.out.println("🔥 Kafka Meddelande publicerat! Topic: " + TOPIC +
+                    logger.info("🔥 Kafka Meddelande publicerat! Topic: " + TOPIC +
                             " | Partition: " + partition +
                             " | Offset: " + offset);
+
                     logger.info("[Kafka] Meddelande publicerat! Topic: \" + TOPIC +\n" +
                             " \" | Partition: \" + partition +\n" +
                             " \" | Offset: \" + offset);");

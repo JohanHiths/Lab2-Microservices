@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bot-service
+  labels:
+    app: bot-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: bot-service
+  template:
+    metadata:
+      labels:
+        app: bot-service
+    spec:
+      containers:
+        - name: bot-service
+          image: bot-service:latest
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 8082
+          env:
+
+            - name: SPRING_KAFKA_BOOTSTRAP_SERVERS
+              value: "kafka-service:9092"
+            - name: GRPC_SERVER_PORT
+              value: "9098"
+            - name: OPENROUTER_MODEL
+              value: "openai/gpt-4o-mini"
+            - name: OPENROUTER_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: openrouter-secret
+                  key: api-key
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: bot-service
+spec:
+  selector:
+    app: bot-service
+  ports:
+    - protocol: TCP
+      port: 8082
+      targetPort: 8082
