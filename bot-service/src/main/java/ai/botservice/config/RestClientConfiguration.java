@@ -14,6 +14,9 @@ public class RestClientConfiguration {
 
     @Bean
     public RestClient restClient() {
+        var requestFactory = new org.springframework.http.client.SimpleClientHttpRequestFactory();
+        requestFactory.setConnectTimeout(5000);
+        requestFactory.setReadTimeout(15000);
         return RestClient.builder()
                 .baseUrl("https://openrouter.ai/api/v1")
                 .defaultHeader("Authorization", "Bearer " + apiKey)

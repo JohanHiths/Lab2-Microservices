@@ -46,9 +46,6 @@ public class KafkaProducerService {
                             " | Partition: " + partition +
                             " | Offset: " + offset);
 
-                    logger.info("[Kafka] Meddelande publicerat! Topic: \" + TOPIC +\n" +
-                            " \" | Partition: \" + partition +\n" +
-                            " \" | Offset: \" + offset);");
                 } else {
 
                     logger.error("❌ [Kafka] Kunde inte leverera meddelande till broker: " + ex.getMessage());
@@ -57,7 +54,7 @@ public class KafkaProducerService {
 
         } catch (Exception e) {
 
-            logger.error("❌ Kafka Serialiseringsfel: " + e.getMessage());
+            logger.error("❌ Kafka Serialiseringsfel", e);
         }
     }
 }
