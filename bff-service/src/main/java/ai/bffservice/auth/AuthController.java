@@ -11,9 +11,12 @@ import net.devh.boot.grpc.client.inject.GrpcClient;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 
 @RestController
 @RequestMapping("/api/auth")
+
 public class AuthController {
 
     @GrpcClient("auth-service")
@@ -31,7 +34,8 @@ public class AuthController {
                     .build();
 
             LoginResponse response = authStub.login(gRpcRequest);
-            return ResponseEntity.ok(response.getToken());
+            return ResponseEntity.ok(Map.of("token", response.getToken()));
+
         }
          catch
             (io.grpc.StatusRuntimeException e){

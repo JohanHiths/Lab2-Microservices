@@ -1,0 +1,100 @@
+.chat-container {
+    background: var(--color-bg);
+    color: var(--color-text);
+    padding: 30px;
+    border-radius: 20px;
+    width: 100%;
+    max-width: 500px;
+    height: 80vh;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+.select-row {
+    margin-bottom: 15px;
+}
+
+.chat-container select {
+    width: 100%;
+    padding: 10px;
+    border-radius: 10px;
+    background: var(--color-surface);
+    color: white;
+    border: 1px solid rgba(255,255,255,0.1);
+    font-size: 1rem;
+    cursor: pointer;
+    outline: none;
+}
+
+.chat-box {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding-right: 5px;
+}
+
+.bubble {
+    max-width: 75%;
+    padding: 12px 16px;
+    border-radius: 18px;
+    font-size: 0.95rem;
+    line-height: 1.4;
+    word-wrap: break-word;
+}
+
+
+.user {
+    align-self: flex-end;
+    background: var(--color-primary);
+    color: white;
+    border-bottom-right-radius: 4px;
+}
+
+
+.ai {
+    align-self: flex-start;
+    background: var(--color-surface);
+    color: white;
+    border-bottom-left-radius: 4px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.input-row {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.input-row input {
+    flex: 1;
+    margin: 0;
+    height: 46px;
+    background: var(--color-surface);
+    color: white;
+    padding: 0 15px;
+    border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.1);
+}
+
+.input-row button {
+    height: 46px;
+    padding: 0 24px;
+    border-radius: 10px;
+    border: none;
+    background: var(--color-accent);
+    color: #161a2d;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 1rem;
+    transition: 0.2s;
+}
+
+.input-row button:hover {
+    opacity: 0.9;
+    transform: scale(1.02);
+}
