@@ -24,3 +24,5 @@ Thumbs.db
 # Loggar och miljövariabler
 *.log
 .env
+secrets/*
+!secrets/README.md

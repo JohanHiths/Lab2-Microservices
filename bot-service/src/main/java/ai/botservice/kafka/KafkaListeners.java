@@ -30,16 +30,15 @@ public class KafkaListeners {
 
     @KafkaListener(topics = "chat-messages", groupId = "bot_service_group_debug_2026_05_28")
 
-    public void listen(String data) {
+    public void listen(String data) throws Exception {
 
         logger.info("Ropar på kafka: {}", data);
 
 
-        try {
 
             MessageDTO incoming = objectMapper.readValue(data, MessageDTO.class);
 
-            logger.info("Lyssnare aktiverad! Användaren skrev: {}",  incoming.content());
+            logger.info("Lyssnare aktiverad! Användaren skrev: {}", incoming.content());
 
 
             Personality personality = Personality.valueOf(incoming.personality());
@@ -50,9 +49,6 @@ public class KafkaListeners {
                     incoming.content(),
                     personality
             );
-
-
-
 
 
             String aiResponseText = chatService.chatWithLLM(chatRequest);
@@ -69,10 +65,5 @@ public class KafkaListeners {
 
             logger.info("🚀 AI-svar skickat tillbaka till Kafka!");
 
-        } catch (Exception e) {
-            logger.error("\"❌ Fel i Bot-lyssnaren: " + e.getMessage());
-            e.printStackTrace();
         }
-    }
-
 }
