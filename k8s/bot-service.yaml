@@ -14,16 +14,33 @@ spec:
       labels:
         app: bot-service
     spec:
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+
       containers:
         - name: bot-service
           image: bot-service:latest
           imagePullPolicy: Never
+
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: ["ALL"]
+
           ports:
             - containerPort: 8082
-          env:
 
+          env:
             - name: SPRING_KAFKA_BOOTSTRAP_SERVERS
               value: "kafka-service:9092"
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: app-secrets
+                  key: jwt-secret
             - name: GRPC_SERVER_PORT
               value: "9098"
             - name: OPENROUTER_MODEL
@@ -33,6 +50,14 @@ spec:
                 secretKeyRef:
                   name: openrouter-secret
                   key: api-key
+
+          volumeMounts:
+            - mountPath: /tmp
+              name: tmp-volume
+
+      volumes:
+        - name: tmp-volume
+          emptyDir: {}
 
 ---
 apiVersion: v1
@@ -44,5 +69,5 @@ spec:
     app: bot-service
   ports:
     - protocol: TCP
-      port: 8082
+      port: 8089
       targetPort: 8082

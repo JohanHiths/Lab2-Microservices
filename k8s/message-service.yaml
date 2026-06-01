@@ -14,18 +14,44 @@ spec:
       labels:
         app: message-service
     spec:
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
       containers:
         - name: message-service
           image: message-service:latest
           imagePullPolicy: Never
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: [ "ALL" ]
           ports:
-            - containerPort: 8081
+            - containerPort: 8084
           env:
-
             - name: SPRING_KAFKA_BOOTSTRAP_SERVERS
               value: "kafka-service:9092"
+
             - name: SPRING_DATA_MONGODB_URI
               value: "mongodb://mongo-service:27017/messagedb"
+
+            - name: MONGO_USER
+              valueFrom:
+                secretKeyRef:
+                  name: mongo-credentials
+                  key: username
+
+            - name: MONGO_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mongo-credentials
+                  key: password
+
+            - name: SPRING_MONGODB_URI
+              value: "mongodb://$(MONGO_USER):$(MONGO_PASSWORD)@mongo-service:27017/messagedb?authSource=admin"
+
+
 
 ---
 apiVersion: v1
@@ -37,5 +63,5 @@ spec:
     app: message-service
   ports:
     - protocol: TCP
-      port: 8081
-      targetPort: 8081
+      port: 8084
+      targetPort: 8084

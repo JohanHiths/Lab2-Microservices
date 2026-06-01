@@ -1,20 +1,30 @@
 version: '3.8'
 
-
-
 services:
   message-service:
     image: message-service:latest
     build: ./message-service
     ports:
-      - "8081:8081"
-
+      - "8081:8084"
+    environment:
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: "kafka:9092"
+      SPRING_DATA_MONGODB_URI: "mongodb://message-db:27017/messagedb"
 
   bot-service:
-      image: bot-service:latest
-      build: ./bot-service
-      ports:
-        - "8082:8082"
+    image: bot-service:latest
+    secrets:
+      - jwt-secret
+    environment:
+      - JWT_SECRET_FILE=/run/secrets/jwt-secret
+      - OPENROUTER_API_KEY=${OPENROUTER_API_KEY}
+      - OPENROUTER_MODEL=openai/gpt-4o-mini
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+    build: ./bot-service
+    ports:
+      - "8082:8082"
+      - "8089:8089"
+
+
   db:
     image: postgres:16
     environment:
@@ -34,7 +44,7 @@ services:
       KAFKA_PROCESS_ROLES: 'broker,controller'
       KAFKA_CONTROLLER_QUORUM_VOTERS: '1@localhost:9093'
       KAFKA_LISTENERS: 'PLAINTEXT://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093'
-      KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT://localhost:9092'
+      KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT://kafka:9092'
       KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
       KAFKA_LOG_DIRS: '/tmp/kraft-combined-logs'
       CLUSTER_ID: 'MkU3OEVBNTcwNTJENDM2Qk'
@@ -52,3 +62,7 @@ services:
 
 volumes:
   mongo-data:
+
+secrets:
+  jwt-secret:
+    file: ./secrets/jwt-secret.txt

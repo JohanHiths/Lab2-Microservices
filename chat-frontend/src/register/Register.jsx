@@ -1,19 +1,16 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import '../login/Login.css';
 
-
 export default function Register() {
-
+    const navigate = useNavigate();
     const [formData, setFormData] = useState({
-        firstName: '',
-        lastName: '',
-        email: '',
-        phone: '',
+        username: '',
+        displayName: '',
         password: '',
         confirmPassword: ''
     });
-
+    const [error, setError] = useState('');
 
     const handleChange = (e) => {
         const { id, value } = e.target;
@@ -23,16 +20,41 @@ export default function Register() {
         }));
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
+        setError('');
 
 
         if (formData.password !== formData.confirmPassword) {
-            alert("Lösenorden matchar inte!");
+            setError("Lösenorden matchar inte!");
             return;
         }
 
-        console.log("Skickar registreringsdata till BFF:", formData);
+        try {
+
+            const response = await fetch('http://localhost:9091/api/auth/signup', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    username: formData.username,
+                    displayName: formData.displayName,
+                    password: formData.password
+                }),
+            });
+
+            if (response.ok) {
+                console.log("Registrering lyckades!");
+                navigate('/login');
+            } else {
+                const data = await response.json();
+                setError(data.message || "Registreringen misslyckades.");
+            }
+        } catch (err) {
+            setError("Kunde inte ansluta till servern. Kontrollera din minikube tunnel!");
+            console.error("Fel vid registrering:", err);
+        }
     };
 
     return (
@@ -42,28 +64,18 @@ export default function Register() {
                     Registrera dig
                 </h1>
 
+                {error && <div className="error-message" style={{ color: 'red', marginBottom: '15px', textAlign: 'center' }}>{error}</div>}
+
                 <form className="register-form" onSubmit={handleSubmit}>
                     <div className="form-group">
-                        <label htmlFor="firstName">Förnamn</label>
-                        <input type="text" id="firstName" value={formData.firstName} onChange={handleChange} required />
+                        <label htmlFor="username">Användarnamn</label>
+                        <input type="text" id="username" value={formData.username} onChange={handleChange} required />
                     </div>
 
                     <div className="form-group">
-                        <label htmlFor="lastName">Efternamn</label>
-                        <input type="text" id="lastName" value={formData.lastName} onChange={handleChange} required />
+                        <label htmlFor="displayName">Visningsnamn (Display Name)</label>
+                        <input type="text" id="displayName" value={formData.displayName} onChange={handleChange} required />
                     </div>
-
-
-                    <div className="form-group">
-                        <label htmlFor="email">E-post</label>
-                        <input type="email" id="email" value={formData.email} onChange={handleChange} required />
-                    </div>
-
-                    <div className="form-group">
-                        <label htmlFor="phone">Mobilnummer</label>
-                        <input type="tel" id="phone" value={formData.phone} onChange={handleChange} />
-                    </div>
-
 
                     <div className="form-group">
                         <label htmlFor="password">Lösenord</label>

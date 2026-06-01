@@ -24,6 +24,8 @@ public class JwtTokenProvider {
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + jwtExpirationInMs);
 
+
+
         Key key = Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtSecret));
 
         return Jwts.builder()
