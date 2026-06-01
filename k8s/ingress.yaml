@@ -37,3 +37,10 @@ spec:
                 name: bot-service
                 port:
                   number: 8089
+          - path: /api
+            pathType: Prefix
+            backend:
+              service:
+                name: bot-service
+                port:
+                  number: 8082
