@@ -1,25 +1,31 @@
 version: '3.8'
 
-
-
 services:
   message-service:
     image: message-service:latest
     build: ./message-service
     ports:
-      - "8081:8081"
-
+      - "8081:8084"
+    environment:
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: "kafka:9092"
+      SPRING_DATA_MONGODB_URI: "mongodb://message-db:27017/messagedb"
 
   bot-service:
-      image: bot-service:latest
-      secrets:
-        - jwt-secret
-      environment:
-          - JWT_SECRET_FILE=/run/secrets/jwt-secret
-      build: ./bot-service
-      ports:
-        - "8082:8082"
-        - "8089:8089"
+    image: bot-service:latest
+    secrets:
+      - jwt-secret
+    environment:
+      - JWT_SECRET_FILE=/run/secrets/jwt-secret
+      - OPENROUTER_API_KEY=${OPENROUTER_API_KEY}
+      - OPENROUTER_MODEL=openai/gpt-4o-mini
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+    build: ./bot-service
+    ports:
+      - "8082:8082"
+      - "8089:8082"
+    depends_on:
+      kafka:
+        condition: service_healthy
 
   db:
     image: postgres:16
@@ -38,12 +44,21 @@ services:
     environment:
       KAFKA_NODE_ID: 1
       KAFKA_PROCESS_ROLES: 'broker,controller'
-      KAFKA_CONTROLLER_QUORUM_VOTERS: '1@localhost:9093'
+      KAFKA_CONTROLLER_QUORUM_VOTERS: '1@kafka:9093'
       KAFKA_LISTENERS: 'PLAINTEXT://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093'
-      KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT://localhost:9092'
+      KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT://kafka:9092'
       KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
       KAFKA_LOG_DIRS: '/tmp/kraft-combined-logs'
       CLUSTER_ID: 'MkU3OEVBNTcwNTJENDM2Qk'
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/kafka/bin/kafka-broker-api-versions.sh --bootstrap-server localhost:9092 >/dev/null 2>&1"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+      start_period: 10s
 
   message-db:
     image: mongo:latest
