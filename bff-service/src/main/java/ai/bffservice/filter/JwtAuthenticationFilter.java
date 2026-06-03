@@ -36,6 +36,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             String token = authHeader.substring(7);
 
+            System.out.println(jwtSecret);
             try {
 
                 Claims claims = Jwts.parser()
@@ -46,7 +47,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
                 String userId = claims.getSubject();
 
+
                 if (userId != null) {
+
 
                     UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
                             userId, null, Collections.emptyList());

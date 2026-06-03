@@ -34,7 +34,7 @@ spec:
 
 
           ports:
-            - containerPort: 8084
+            - containerPort: 8085
 
           env:
             - name: SPRING_KAFKA_BOOTSTRAP_SERVERS
@@ -84,5 +84,5 @@ spec:
     app: message-service
   ports:
     - protocol: TCP
-      port: 8084
-      targetPort: 8084
+      port: 8085
+      targetPort: 8085
