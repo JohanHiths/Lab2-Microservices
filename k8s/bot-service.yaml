@@ -51,6 +51,10 @@ spec:
                 secretKeyRef:
                   name: openrouter-secret
                   key: api-key
+            - name: SPRING_DOCKER_COMPOSE_ENABLED
+              value: "false"
+
+
 
           volumeMounts:
             - mountPath: /tmp

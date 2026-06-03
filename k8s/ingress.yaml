@@ -14,7 +14,7 @@ spec:
               service:
                 name: message-service
                 port:
-                  number: 8081
+                  number: 8084
 
           - path: /login
             pathType: Prefix
