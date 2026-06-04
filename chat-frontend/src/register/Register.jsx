@@ -32,7 +32,7 @@ export default function Register() {
 
         try {
 
-            const response = await fetch('/api/auth/signup', {
+            const response = await fetch('http://localhost:9091/api/auth/signup', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -48,24 +48,13 @@ export default function Register() {
                 console.log("Registrering lyckades!");
                 navigate('/login');
             } else {
-                const contentType = response.headers.get('content-type') || '';
-                let message = "Registreringen misslyckades.";
-
-                if (contentType.includes('application/json')) {
-                    const data = await response.json();
-                    message = data?.message || message;
-                } else {
-                    const text = (await response.text()).trim();
-                    if (text) message = text;
-                }
-
-                setError(message);
+                const data = await response.json();
+                setError(data.message || "Registreringen misslyckades.");
             }
         } catch (err) {
             setError("Kunde inte ansluta till servern. Kontrollera din minikube tunnel!");
             console.error("Fel vid registrering:", err);
         }
-
     };
 
     return (
