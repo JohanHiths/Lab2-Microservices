@@ -16,7 +16,6 @@ spec:
     spec:
       securityContext:
         runAsNonRoot: true
-        runAsUser: 10001
         seccompProfile:
           type: RuntimeDefault
       containers:
@@ -28,14 +27,8 @@ spec:
             readOnlyRootFilesystem: true
             capabilities:
               drop: [ "ALL" ]
-          volumeMounts:
-            - name: ephemeral-tmp
-              mountPath: /tmp
-
-
           ports:
-            - containerPort: 8085
-
+            - containerPort: 8084
           env:
             - name: SPRING_KAFKA_BOOTSTRAP_SERVERS
               value: "kafka-service:9092"
@@ -55,22 +48,8 @@ spec:
                   name: mongo-credentials
                   key: password
 
-            - name: SPRING_DOCKER_COMPOSE_ENABLED
-              value: "false"
-
             - name: SPRING_MONGODB_URI
               value: "mongodb://$(MONGO_USER):$(MONGO_PASSWORD)@mongo-service:27017/messagedb?authSource=admin"
-            - name: JWT_SECRET
-              valueFrom:
-                  secretKeyRef:
-                    name: jwt-secret
-                    key: secret
-
-      volumes:
-            - name: ephemeral-tmp
-              emptyDir: { }
-
-
 
 
 
@@ -84,5 +63,5 @@ spec:
     app: message-service
   ports:
     - protocol: TCP
-      port: 8085
-      targetPort: 8085
+      port: 8084
+      targetPort: 8084
