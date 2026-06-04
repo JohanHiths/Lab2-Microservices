@@ -1,0 +1,65 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bff-service
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: bff-service
+  template:
+    metadata:
+      labels:
+        app: bff-service
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+        seccompProfile:
+          type: RuntimeDefault
+
+      containers:
+        - name: bff-service
+          image: bff-service:latest
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 8091
+          env:
+            - name: SPRING_DOCKER_COMPOSE_ENABLED
+              value: "false"
+            - name: JWT_SECRET
+              valueFrom:
+                  secretKeyRef:
+                    name: jwt-secret
+                    key: secret
+            - name: MESSAGE_SERVICE_URL
+              value: "http://message-service:8089"
+            - name: MANAGEMENT_OTLP_METRICS_EXPORT_ENABLED
+              value: "false"
+            - name: MANAGEMENT_OTLP_TRACING_EXPORT_ENABLED
+              value: "false"
+
+
+          volumeMounts:
+            - name: ephemeral-tmp
+              mountPath: /tmp
+      volumes:
+        - name: ephemeral-tmp
+          emptyDir: {}
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: bff-service
+  namespace: default
+spec:
+  ports:
+    - port: 8091
+      targetPort: 8091
+      protocol: TCP
+  selector:
+    app: bff-service
+  type: ClusterIP
