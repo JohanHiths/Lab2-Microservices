@@ -1,6 +1,6 @@
 package ai.bffservice.auth;
 
-import ai.bffservice.dto.LoginRequestDto;
+import ai.bffservice.dto.LoginRequestDTO;
 import ai.bffservice.dto.SignupRequestDto;
 import com.example.chat.auth.AuthServiceGrpc;
 import com.example.chat.auth.LoginRequest;
@@ -26,11 +26,11 @@ public class AuthController {
     private UserServiceGrpc.UserServiceBlockingStub userStub;
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequestDto request) {
+    public ResponseEntity<?> login(@RequestBody LoginRequestDTO request) {
         try {
             LoginRequest gRpcRequest = LoginRequest.newBuilder()
-                    .setUsername(request.getUsername())
-                    .setPassword(request.getPassword())
+                    .setUsername(request.username())
+                    .setPassword(request.password())
                     .build();
 
             LoginResponse response = authStub.login(gRpcRequest);
