@@ -24,10 +24,25 @@ spec:
           image: user-service:latest
           imagePullPolicy: Never
           ports:
-            - containerPort: 8091
+            - containerPort: 8094
           env:
             - name: SPRING_DOCKER_COMPOSE_ENABLED
               value: "false"
+            - name: DB_URL
+              valueFrom:
+               secretKeyRef:
+                name: user-service-secrets
+                key: DB_URL
+            - name: DB_USERNAME
+              valueFrom:
+               secretKeyRef:
+                name: user-service-secrets
+                key: DB_USERNAME
+            - name: DB_PASSWORD
+              valueFrom:
+               secretKeyRef:
+                name: user-service-secrets
+                key: DB_PASSWORD
 
 
 

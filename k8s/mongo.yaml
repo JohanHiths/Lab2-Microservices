@@ -22,7 +22,7 @@ spec:
               mountPath: /data/db
 
           ports:
-          - containerPort: 27017
+          - containerPort: 27019
           env:
             - name: MONGO_INITDB_ROOT_USERNAME
               valueFrom:
@@ -51,5 +51,5 @@ spec:
     app: mongo
   ports:
     - protocol: TCP
-      port: 27017
-      targetPort: 27017
+      port: 27019
+      targetPort: 27019

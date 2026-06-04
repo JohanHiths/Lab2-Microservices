@@ -32,7 +32,7 @@ spec:
               drop: ["ALL"]
 
           ports:
-            - containerPort: 8082
+            - containerPort: 8086
 
           env:
             - name: SPRING_KAFKA_BOOTSTRAP_SERVERS
@@ -40,8 +40,8 @@ spec:
             - name: JWT_SECRET
               valueFrom:
                 secretKeyRef:
-                  name: app-secrets
-                  key: jwt-secret
+                  name: jwt-secret
+                  key: secret
             - name: GRPC_SERVER_PORT
               value: "9098"
             - name: OPENROUTER_MODEL
@@ -74,5 +74,5 @@ spec:
     app: bot-service
   ports:
     - protocol: TCP
-      port: 8082
-      targetPort: 8082
+      port: 8086
+      targetPort: 8086
